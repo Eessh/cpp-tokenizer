@@ -3,51 +3,97 @@
 #include <string>
 #include <vector>
 
+/// @brief CppTokenizer namespace.
 namespace CppTokenizer
 {
 
+/// @brief TokenType - enum of all token types.
 typedef enum class TokenType
 {
+  /// @brief Whitespace - ' ' character.
   WHITESPACE,
+  /// @brief Newline - '\n' character.
   NEWLINE,
+  /// @brief Tab - '\t' character.
   TAB,
+
+  /// @brief Semicolon - ';' character.
   SEMICOLON,
+  /// @brief Coma - ',' character.
   COMMA,
+
+  /// @brief Escape backslash - '\' character.
   ESCAPE_BACKSLASH,
+
+  /// @brief Open bracket - '(' character.
   BRACKET_OPEN,
+  /// @brief Closed bracket - ')' character.
   BRACKET_CLOSE,
+
+  /// @brief Open square bracket - '[' character.
   SQUARE_BRACKET_OPEN,
+  /// @brief Closed square bracket - ']' character.
   SQUARE_BRACKET_CLOSE,
+
+  /// @brief Open curly brace - '{' character.
   CURLY_BRACE_OPEN,
+  /// @brief Closed curly brace - '}' character.
   CURLY_BRACE_CLOSE,
+
+  /// @brief Charcter token type.
   CHARACTER,
+  /// @brief Strng token type.
   STRING,
+  /// @brief Comment token type.
   COMMENT,
+  /// @brief Multiline token type.
   MULTILINE_COMMENT,
+  /// @brief Operator token type.
   OPERATOR,
+  /// @brief Keyword token type.
   KEYWORD,
+  /// @brief Preprocessor directive token type.
   PREPROCESSOR_DRIECTIVE,
+  /// @brief Identifier token type.
   IDENTIFIER,
 
+  /// @brief Unknown token type.
   UNKNOWN
 } TokenType;
 
+/// @brief Token - consists of type, start & end offsets, token string value.
 class Token
 {
 public:
+  /// @brief Default constructor.
   Token() noexcept;
+
+  /// @brief Constructor with token type argument.
+  /// @param token_type the type of token to construct.
   Token(const TokenType& token_type) noexcept;
 
+  /// @brief Type of token.
   TokenType type;
-  uint32_t start_offset, end_offset;
+
+  /// @brief Starting offset or position of token in string.
+  uint32_t start_offset;
+
+  /// @brief Ending offset or position of token in string.
+  uint32_t end_offset;
+
+  /// @brief Token string.
   std::string value;
 };
 
 class Tokenizer
 {
 public:
+  /// @brief Default constructor.
   Tokenizer() noexcept;
 
+  /// @brief Tokenizes the given string into tokens.
+  /// @param str const reference to the string to tokenize.
+  /// @return Const reference to vector of Tokens.
   [[nodiscard]] const std::vector<Token>&
   tokenize(const std::string& str) noexcept;
 
@@ -58,6 +104,8 @@ private:
   uint32_t _position;
 };
 
+/// @brief Logs tokens to STDOUT with pretty format.
+/// @param tokens const reference to vector of tokens.
 void log_tokens(const std::vector<Token>& tokens) noexcept;
 
 }; // namespace CppTokenizer
