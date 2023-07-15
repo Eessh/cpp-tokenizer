@@ -27,6 +27,7 @@ typedef enum class TokenType
   OPERATOR,
   KEYWORD,
   PREPROCESSOR_DRIECTIVE,
+  IDENTIFIER,
 
   UNKNOWN
 } TokenType;

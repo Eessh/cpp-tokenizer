@@ -12,9 +12,9 @@
 static std::string seperators = " \n.!\t;:\\/+-*&%<>=(){}[]\"',|~^";
 
 static std::vector<std::string> operators = {
-  "+",  "-",  "*",  "/",  "=",  "<",  ">",  "!",  "?",  ":", "::",
-  "->", "<=", ">=", "+=", "-=", "/=", "*=", "^",  "^=", "&", "&&",
-  "==", "&=", "||", "|",  "%",  "%=", ">>", "<<", "~"};
+  "::",
+  "->", "<=", ">=", "+=", "-=", "/=", "*=", "^=", "&&",
+  "==", "&=", "||", "%=", ">>", "<<", "~", "+",  "-",  "*",  "/",  "=",  "<",  ">",  "!",  "?",  ":", "^", "&", "|", "%"};
 
 static std::vector<std::string> keywords = {"alignas",
                                             "alignof",
@@ -114,9 +114,9 @@ static std::vector<std::string> keywords = {"alignas",
                                             "xor",
                                             "xor_eq"};
 
-static std::vector<std::string> preprocessor_directives = {"#if",
+static std::vector<std::string> preprocessor_directives = {"#ifndef",
                                                            "#ifdef",
-                                                           "#ifndef",
+                                                           "#if",
                                                            "#else",
                                                            "#elif",
                                                            "#elifdef",
@@ -172,6 +172,8 @@ std::string token_type_to_string(const CppTokenizer::TokenType& type)
     return "KEYWORD";
   case CppTokenizer::TokenType::PREPROCESSOR_DRIECTIVE:
     return "PREPROCESSOR_DIRECTIVE";
+  case CppTokenizer::TokenType::IDENTIFIER:
+    return "IDENTIFIER";
   default:
     break;
   }
@@ -205,6 +207,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
   while(_position < str.size())
   {
     char character = str[_position];
+    printf("character: %c\n", character);
 
     /// Preprocessor Directive
     if(character == '#')
@@ -233,8 +236,8 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         _tokens.emplace_back(token);
         Token whitespace_token(TokenType::WHITESPACE);
         whitespace_token.start_offset = _position;
-        _position++;
         whitespace_token.end_offset = _position;
+        _position++;
         whitespace_token.value = " ";
         _tokens.emplace_back(whitespace_token);
         continue;
@@ -380,7 +383,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
     /// Operator
     for(const std::string& op : operators)
     {
-      if(str.find(op, _position) != std::string::npos)
+      if(str.compare(_position, op.size(), op) == 0)
       {
         // found operator match
         _current_token = Token(TokenType::OPERATOR);
@@ -389,16 +392,16 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         _current_token.value = op;
         _tokens.emplace_back(_current_token);
         _position += op.size();
-        goto operator_found;
+        printf("op: %s\n", op.c_str());
+        goto while_loop_continue;
       }
     }
-  operator_found:
-    continue;
+    printf("hehe\n");
 
     /// Keyword
     for(const std::string keyword : keywords)
     {
-      if(str.rfind(keyword, _position) != std::string::npos)
+      if(str.compare(_position, keyword.size(), keyword) == 0)
       {
         // found keyword match
         _current_token = Token(TokenType::KEYWORD);
@@ -407,29 +410,40 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         _current_token.value = keyword;
         _tokens.emplace_back(_current_token);
         _position += keyword.size();
-        goto keyword_found;
+        goto while_loop_continue;
       }
     }
-  keyword_found:
-    continue;
 
     /// Alphabets
     if(_inside_comment || _inside_multiline_comment || _inside_string ||
        _inside_char)
     {
-      printf("ejejej\n");
       _current_token.value.push_back(character);
       _position++;
       goto while_loop_continue;
     }
-
-    printf("Encountered unknown token!\n");
+    _current_token = Token(TokenType::IDENTIFIER);
+    _current_token.start_offset = _position;
+    _current_token.value = character;
     _position++;
+    // moving forward until a separator is encountered
+    while(_position < str.size() &&
+          seperators.find(str[_position]) == std::string::npos)
+    {
+      _current_token.value.push_back(str[_position]);
+      _position++;
+    }
+    _current_token.end_offset = _position - 1;
+    if (_tokens.back().type == TokenType::IDENTIFIER) {
+      _tokens.back().value.append(_current_token.value);
+    }
+    else {
+      _tokens.emplace_back(_current_token);
+    }
 
   while_loop_continue:
     continue;
   }
-  _tokens.emplace_back(_current_token);
 
   return _tokens;
 }
