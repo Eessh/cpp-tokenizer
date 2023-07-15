@@ -12,9 +12,9 @@
 static std::string seperators = " \n.!\t;:\\/+-*&%<>=(){}[]\"',|~^";
 
 static std::vector<std::string> operators = {
-  "::",
-  "->", "<=", ">=", "+=", "-=", "/=", "*=", "^=", "&&",
-  "==", "&=", "||", "%=", ">>", "<<", "~", "+",  "-",  "*",  "/",  "=",  "<",  ">",  "!",  "?",  ":", "^", "&", "|", "%"};
+  "::", "->", "<=", ">=", "+=", "-=", "/=", "*=", "^=", "&&", "==",
+  "&=", "||", "%=", ">>", "<<", "~",  "+",  "-",  "*",  "/",  "=",
+  "<",  ">",  "!",  "?",  ":",  "^",  "&",  "|",  "%"};
 
 static std::vector<std::string> keywords = {"alignas",
                                             "alignof",
@@ -434,10 +434,12 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
       _position++;
     }
     _current_token.end_offset = _position - 1;
-    if (_tokens.back().type == TokenType::IDENTIFIER) {
+    if(_tokens.back().type == TokenType::IDENTIFIER)
+    {
       _tokens.back().value.append(_current_token.value);
     }
-    else {
+    else
+    {
       _tokens.emplace_back(_current_token);
     }
 
