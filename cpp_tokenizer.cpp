@@ -206,9 +206,9 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
   {
     char character = str[_position];
 
+    /// Preprocessor Directive
     if(character == '#')
     {
-      // preprocessor directive
       Token token(TokenType::PREPROCESSOR_DRIECTIVE);
       token.start_offset = _position;
       token.value.push_back(character);
@@ -243,9 +243,9 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
       continue;
     }
 
+    /// Seperator
     if(seperators.find(character) != std::string::npos)
     {
-      // character is seperator
       if(character == '\'')
       {
         if(_inside_char)
@@ -293,17 +293,17 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
             _current_token.value.push_back(character);
             _tokens.emplace_back(_current_token);
             _position++;
-            continue;
+            goto while_loop_continue;
           }
           _current_token.value.push_back(character);
           _position++;
-          continue;
+          goto while_loop_continue;
         }
         if(_inside_comment)
         {
           _current_token.value.push_back(character);
           _position++;
-          continue;
+          goto while_loop_continue;
         }
         if(_position + 1 < str.size())
         {
@@ -315,9 +315,9 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
             _current_token.value = "//";
             _current_token.start_offset = _position;
             _position += 2;
-            continue;
+            goto while_loop_continue;
           }
-          if(str[_position] == '*')
+          if(str[_position + 1] == '*')
           {
             // multiline comment
             _current_token = Token(TokenType::MULTILINE_COMMENT);
@@ -325,7 +325,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
             _current_token.value = "/*";
             _current_token.start_offset = _position;
             _position += 2;
-            continue;
+            goto while_loop_continue;
           }
         }
       }
@@ -337,8 +337,10 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _current_token.end_offset = _position - 1;
           _tokens.emplace_back(_current_token);
           _position++;
-          continue;
+          goto while_loop_continue;
         }
+        _position++;
+        goto while_loop_continue;
       }
       else if(character == ' ')
       {
@@ -346,23 +348,86 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         {
           _current_token.value.push_back(character);
           _position++;
-          continue;
+          goto while_loop_continue;
         }
-      }
-      _position++;
-      continue;
-    }
-    else
-    {
-      // alphabets
-      if(_inside_comment || _inside_multiline_comment || _inside_string ||
-         _inside_char)
-      {
-        _current_token.value.push_back(character);
         _position++;
-        continue;
+        goto while_loop_continue;
       }
     }
+
+    /// continuing if inside comment
+    if(_inside_comment)
+    {
+      while(_position < str.size() && str[_position] != '\n')
+      {
+        _current_token.value.push_back(str[_position]);
+        _position++;
+      }
+      goto while_loop_continue;
+    }
+
+    /// continuing if inside multiline comment
+    if(_inside_multiline_comment)
+    {
+      while(_position < str.size() && str[_position] != '*')
+      {
+        _current_token.value.push_back(str[_position]);
+        _position++;
+      }
+      goto while_loop_continue;
+    }
+
+    /// Operator
+    for(const std::string& op : operators)
+    {
+      if(str.find(op, _position) != std::string::npos)
+      {
+        // found operator match
+        _current_token = Token(TokenType::OPERATOR);
+        _current_token.start_offset = _position;
+        _current_token.end_offset = _position + op.size() - 1;
+        _current_token.value = op;
+        _tokens.emplace_back(_current_token);
+        _position += op.size();
+        goto operator_found;
+      }
+    }
+  operator_found:
+    continue;
+
+    /// Keyword
+    for(const std::string keyword : keywords)
+    {
+      if(str.rfind(keyword, _position) != std::string::npos)
+      {
+        // found keyword match
+        _current_token = Token(TokenType::KEYWORD);
+        _current_token.start_offset = _position;
+        _current_token.end_offset = _position + keyword.size() - 1;
+        _current_token.value = keyword;
+        _tokens.emplace_back(_current_token);
+        _position += keyword.size();
+        goto keyword_found;
+      }
+    }
+  keyword_found:
+    continue;
+
+    /// Alphabets
+    if(_inside_comment || _inside_multiline_comment || _inside_string ||
+       _inside_char)
+    {
+      printf("ejejej\n");
+      _current_token.value.push_back(character);
+      _position++;
+      goto while_loop_continue;
+    }
+
+    printf("Encountered unknown token!\n");
+    _position++;
+
+  while_loop_continue:
+    continue;
   }
   _tokens.emplace_back(_current_token);
 
