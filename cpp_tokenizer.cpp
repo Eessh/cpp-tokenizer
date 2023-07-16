@@ -14,7 +14,7 @@ static std::string seperators = " \n.!\t;:\\/+-*&%<>=(){}[]\"',|~^";
 static std::vector<std::string> operators = {
   "::", "->", "<=", ">=", "+=", "-=", "/=", "*=", "^=", "&&", "==",
   "&=", "||", "%=", ">>", "<<", "~",  "+",  "-",  "*",  "/",  "=",
-  "<",  ">",  "!",  "?",  ":",  "^",  "&",  "|",  "%"};
+  "<",  ">",  "!",  "?",  ":",  "^",  "&",  "|",  "%", "."};
 
 static std::vector<std::string> keywords = {"alignas",
                                             "alignof",
@@ -391,13 +391,6 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _position++;
           goto while_loop_continue;
         }
-        _current_token = Token(TokenType::OPERATOR);
-        _current_token.start_offset = _position;
-        _current_token.end_offset = _position;
-        _current_token.value.push_back(character);
-        _tokens.emplace_back(_current_token);
-        _position++;
-        goto while_loop_continue;
       }
       else if(character == ',')
       {
