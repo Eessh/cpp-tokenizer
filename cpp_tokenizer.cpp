@@ -654,6 +654,11 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
   return _tokens;
 }
 
+void Tokenizer::clear_tokens() noexcept
+{
+  _tokens.clear();
+}
+
 void log_tokens(const std::vector<Token>& tokens) noexcept
 {
   printf("Tokens: [");
