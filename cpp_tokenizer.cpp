@@ -9,7 +9,7 @@
 //   '%', '<', '>', '=', '(', ')', '{', '}', '[', ']', '"', '\'', ','
 // };
 
-static std::string seperators = " \n.!\t;:\\/+-*&%<>=(){}[]\"',|~^";
+static std::string seperators = " \n\r.!\t;:\\/+-*&%<>=(){}[]\"',|~^";
 
 static std::vector<std::string> operators = {
   "::", "->", "<=", ">=", "+=", "-=", "/=", "*=", "^=", "&&", "==",
@@ -363,6 +363,12 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           goto while_loop_continue;
         }
         // ignore
+        _position++;
+        goto while_loop_continue;
+      }
+      else if(character == '\r')
+      {
+        // ignore carriage return characters
         _position++;
         goto while_loop_continue;
       }
