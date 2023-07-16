@@ -656,6 +656,12 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
 
 void Tokenizer::clear_tokens() noexcept
 {
+  _inside_char = false;
+  _inside_string = false;
+  _inside_comment = false;
+  _inside_multiline_comment = false;
+  _position = 0;
+  _current_token = Token();
   _tokens.clear();
 }
 
