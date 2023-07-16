@@ -374,9 +374,48 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _position++;
           goto while_loop_continue;
         }
+        _current_token = Token(TokenType::WHITESPACE);
+        _current_token.start_offset = _position;
+        _current_token.end_offset = _position;
+        _current_token.value.push_back(character);
+        _tokens.emplace_back(_current_token);
         _position++;
         goto while_loop_continue;
       }
+      else if(character == '.')
+      {
+        if(_inside_comment || _inside_multiline_comment || _inside_char ||
+           _inside_string)
+        {
+          _current_token.value.push_back(character);
+          _position++;
+          goto while_loop_continue;
+        }
+        _current_token = Token(TokenType::OPERATOR);
+        _current_token.start_offset = _position;
+        _current_token.end_offset = _position;
+        _current_token.value.push_back(character);
+        _tokens.emplace_back(_current_token);
+        _position++;
+        goto while_loop_continue;
+        printf("Unreachable for token: '.'\n");
+      }
+      else if(character == ',')
+      {}
+      else if(character == ';')
+      {}
+      else if(character == '(')
+      {}
+      else if(character == ')')
+      {}
+      else if(character == '[')
+      {}
+      else if(character == ']')
+      {}
+      else if(character == '{')
+      {}
+      else if(character == '}')
+      {}
     }
 
     /// continuing if inside comment
@@ -455,14 +494,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
       _position++;
     }
     _current_token.end_offset = _position - 1;
-    if(_tokens.back().type == TokenType::IDENTIFIER)
-    {
-      _tokens.back().value.append(_current_token.value);
-    }
-    else
-    {
-      _tokens.emplace_back(_current_token);
-    }
+    _tokens.emplace_back(_current_token);
 
   while_loop_continue:
     continue;
