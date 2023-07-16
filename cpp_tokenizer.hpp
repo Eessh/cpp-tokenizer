@@ -72,6 +72,8 @@ public:
   /// @param token_type the type of token to construct.
   Token(const TokenType& token_type) noexcept;
 
+  bool operator!=(const Token& other) const noexcept;
+
   /// @brief Type of token.
   TokenType type;
 

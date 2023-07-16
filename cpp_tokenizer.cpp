@@ -192,6 +192,12 @@ Token::Token(const TokenType& token_type) noexcept
   : type(token_type), start_offset(0), end_offset(0), value("")
 {}
 
+bool Token::operator!=(const Token& other) const noexcept
+{
+  return type != other.type || start_offset != other.start_offset ||
+         end_offset != other.end_offset || value != other.value;
+}
+
 Tokenizer::Tokenizer() noexcept
   : _current_token(Token())
   , _tokens({})
@@ -342,6 +348,21 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _position++;
           goto while_loop_continue;
         }
+        if(_inside_multiline_comment || _inside_string)
+        {
+          _current_token.value.push_back(character);
+          _position++;
+          goto while_loop_continue;
+        }
+        if(_current_token.type == TokenType::IDENTIFIER &&
+           _tokens.back() != _current_token)
+        {
+          _current_token.end_offset = _position - 1;
+          _tokens.emplace_back(_current_token);
+          _position++;
+          goto while_loop_continue;
+        }
+        // ignore
         _position++;
         goto while_loop_continue;
       }
