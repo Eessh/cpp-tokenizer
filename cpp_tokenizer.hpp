@@ -53,7 +53,7 @@ typedef enum class TokenType
   /// @brief Keyword token type.
   KEYWORD,
   /// @brief Preprocessor directive token type.
-  PREPROCESSOR_DRIECTIVE,
+  PREPROCESSOR_DIRECTIVE,
   /// @brief Identifier token type.
   IDENTIFIER,
 

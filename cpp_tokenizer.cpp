@@ -170,7 +170,7 @@ std::string token_type_to_string(const CppTokenizer::TokenType& type)
     return "OPERATOR";
   case CppTokenizer::TokenType::KEYWORD:
     return "KEYWORD";
-  case CppTokenizer::TokenType::PREPROCESSOR_DRIECTIVE:
+  case CppTokenizer::TokenType::PREPROCESSOR_DIRECTIVE:
     return "PREPROCESSOR_DIRECTIVE";
   case CppTokenizer::TokenType::IDENTIFIER:
     return "IDENTIFIER";
@@ -217,7 +217,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
     /// Preprocessor Directive
     if(character == '#')
     {
-      Token token(TokenType::PREPROCESSOR_DRIECTIVE);
+      Token token(TokenType::PREPROCESSOR_DIRECTIVE);
       token.start_offset = _position;
       token.value.push_back(character);
       // move forward until space is occurred
