@@ -56,6 +56,8 @@ typedef enum class TokenType
   PREPROCESSOR_DIRECTIVE,
   /// @brief Identifier token type.
   IDENTIFIER,
+  /// @brief Number token type.
+  NUMBER,
 
   /// @brief Unknown token type.
   UNKNOWN

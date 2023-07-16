@@ -174,6 +174,8 @@ std::string token_type_to_string(const CppTokenizer::TokenType& type)
     return "PREPROCESSOR_DIRECTIVE";
   case CppTokenizer::TokenType::IDENTIFIER:
     return "IDENTIFIER";
+  case CppTokenizer::TokenType::NUMBER:
+    return "NUMBER";
   default:
     break;
   }
@@ -570,7 +572,6 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         _current_token.value = op;
         _tokens.emplace_back(_current_token);
         _position += op.size();
-        printf("op: %s\n", op.c_str());
         goto while_loop_continue;
       }
     }
@@ -597,6 +598,26 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
     {
       _current_token.value.push_back(character);
       _position++;
+      goto while_loop_continue;
+    }
+    if(isdigit(character))
+    {
+      // character is number - '0' to '9'
+      _current_token = Token(TokenType::NUMBER);
+      _current_token.start_offset = _position;
+      while(_position < str.size())
+      {
+        if(isdigit(str[_position]) || str[_position] == '.' ||
+           str[_position] == 'e' || str[_position] == 'f')
+        {
+          _current_token.value.push_back(str[_position]);
+          _position++;
+          continue;
+        }
+        break;
+      }
+      _current_token.end_offset = _position - 1;
+      _tokens.emplace_back(_current_token);
       goto while_loop_continue;
     }
     _current_token = Token(TokenType::IDENTIFIER);
