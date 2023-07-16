@@ -213,7 +213,6 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
   while(_position < str.size())
   {
     char character = str[_position];
-    printf("character: %c\n", character);
 
     /// Preprocessor Directive
     if(character == '#')
@@ -575,7 +574,6 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         goto while_loop_continue;
       }
     }
-    printf("hehe\n");
 
     /// Keyword
     for(const std::string keyword : keywords)
