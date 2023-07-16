@@ -625,14 +625,27 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
 void log_tokens(const std::vector<Token>& tokens) noexcept
 {
   printf("Tokens: [");
-  for(const Token& token : tokens)
+  for(uint32_t i = 0; i < tokens.size(); i++)
   {
-    printf("\n  {\n    type: %s,\n    start_offset: %ld,\n    end_offset: "
-           "%ld,\n    value: \"%s\"\n  },",
-           token_type_to_string(token.type).c_str(),
-           token.start_offset,
-           token.end_offset,
-           token.value.c_str());
+    Token token = tokens[i];
+    if(i != tokens.size() - 1)
+    {
+      printf("\n  {\n    type: %s,\n    start_offset: %ld,\n    end_offset: "
+             "%ld,\n    value: \"%s\"\n  },",
+             token_type_to_string(token.type).c_str(),
+             token.start_offset,
+             token.end_offset,
+             token.value.c_str());
+    }
+    else
+    {
+      printf("\n  {\n    type: %s,\n    start_offset: %ld,\n    end_offset: "
+             "%ld,\n    value: \"%s\"\n  }",
+             token_type_to_string(token.type).c_str(),
+             token.start_offset,
+             token.end_offset,
+             token.value.c_str());
+    }
   }
   printf("\n]\n");
 }

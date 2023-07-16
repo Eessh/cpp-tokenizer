@@ -72,6 +72,9 @@ public:
   /// @param token_type the type of token to construct.
   Token(const TokenType& token_type) noexcept;
 
+  /// @brief Checks if given token is not equal to this token.
+  /// @param other the token to compare with this token.
+  /// @return Returns true if the tokens are not equal.
   bool operator!=(const Token& other) const noexcept;
 
   /// @brief Type of token.
