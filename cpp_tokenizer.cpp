@@ -608,7 +608,8 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
       while(_position < str.size())
       {
         if(isdigit(str[_position]) || str[_position] == '.' ||
-           str[_position] == 'e' || str[_position] == 'f')
+           str[_position] == 'e' || str[_position] == 'f' ||
+           (str[_position] == '-' && _current_token.value.back() == 'e'))
         {
           _current_token.value.push_back(str[_position]);
           _position++;
