@@ -398,12 +398,41 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         _tokens.emplace_back(_current_token);
         _position++;
         goto while_loop_continue;
-        printf("Unreachable for token: '.'\n");
       }
       else if(character == ',')
-      {}
+      {
+        if(_inside_comment || _inside_multiline_comment || _inside_char ||
+           _inside_string)
+        {
+          _current_token.value.push_back(character);
+          _position++;
+          goto while_loop_continue;
+        }
+        _current_token = Token(TokenType::COMMA);
+        _current_token.start_offset = _position;
+        _current_token.end_offset = _position;
+        _current_token.value.push_back(character);
+        _tokens.emplace_back(_current_token);
+        _position++;
+        goto while_loop_continue;
+      }
       else if(character == ';')
-      {}
+      {
+        if(_inside_comment || _inside_multiline_comment || _inside_char ||
+           _inside_string)
+        {
+          _current_token.value.push_back(character);
+          _position++;
+          goto while_loop_continue;
+        }
+        _current_token = Token(TokenType::SEMICOLON);
+        _current_token.start_offset = _position;
+        _current_token.end_offset = _position;
+        _current_token.value.push_back(character);
+        _tokens.emplace_back(_current_token);
+        _position++;
+        goto while_loop_continue;
+      }
       else if(character == '(')
       {}
       else if(character == ')')
