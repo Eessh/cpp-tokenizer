@@ -176,6 +176,8 @@ std::string token_type_to_string(const CppTokenizer::TokenType& type)
     return "IDENTIFIER";
   case CppTokenizer::TokenType::NUMBER:
     return "NUMBER";
+  case CppTokenizer::TokenType::FUNCTION:
+    return "FUNCTION";
   default:
     break;
   }
@@ -435,13 +437,17 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
       }
       else if(character == '(')
       {
-        /// TODO: Identifying function, if token before this is literal
         if(_inside_comment || _inside_multiline_comment || _inside_char ||
            _inside_string)
         {
           _current_token.value.push_back(character);
           _position++;
           goto while_loop_continue;
+        }
+        if(_tokens.back().type == TokenType::IDENTIFIER)
+        {
+          // this identifier should definitely be function
+          _tokens.back().type = TokenType::FUNCTION;
         }
         _current_token = Token(TokenType::BRACKET_OPEN);
         _current_token.start_offset = _position;

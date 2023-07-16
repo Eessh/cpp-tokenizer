@@ -58,6 +58,8 @@ typedef enum class TokenType
   IDENTIFIER,
   /// @brief Number token type.
   NUMBER,
+  /// @brief Function token type.
+  FUNCTION,
 
   /// @brief Unknown token type.
   UNKNOWN
