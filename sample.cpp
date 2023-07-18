@@ -1,4 +1,5 @@
 #include <iostream>
+#include "string.h"
 
 /// function declarations
 void func(int a, int b);
