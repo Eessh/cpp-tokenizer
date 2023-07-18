@@ -7,7 +7,7 @@ Super simple tokenizer for C++ language. Geared towards syntax highlighting.
 
 int main() {
   // string to tokenize
-  std::string string_to_tokenize = "#include <iostream>";
+  std::string string_to_tokenize = "#include <iostream>\n";
 
   // creating tokenizer
   CppTokenizer::Tokenizer tokenizer;
@@ -37,22 +37,10 @@ Tokens: [
     value: " "
   },
   {
-    type: OPERATOR,
+    type: HEADER,
     start_offset: 9,
-    end_offset: 9,
-    value: "<"
-  },
-  {
-    type: IDENTIFIER,
-    start_offset: 10,
-    end_offset: 17,
-    value: "iostream"
-  },
-  {
-    type: OPERATOR,
-    start_offset: 18,
     end_offset: 18,
-    value: ">"
+    value: "<iostream>"
   }
 ]
 */
