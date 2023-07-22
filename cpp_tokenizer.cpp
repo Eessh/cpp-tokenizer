@@ -223,38 +223,21 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
     /// Preprocessor Directive
     if(character == '#')
     {
-      Token token(TokenType::PREPROCESSOR_DIRECTIVE);
-      token.start_offset = _position;
-      token.value.push_back(character);
-      // move forward until space is occurred
-      while(_position < str.size() && str[_position] != ' ')
+      // mathcing with preprocessor directives
+      for(const std::string directive : preprocessor_directives)
       {
-        if(str[_position] == '\n')
+        if(str.compare(_position, directive.size(), directive) == 0)
         {
-          // no whitespace encountered
-          token.end_offset = _position - 1;
-          token.value.pop_back();
-          _tokens.emplace_back(token);
-          break;
+          // found directive match
+          _current_token = Token(TokenType::PREPROCESSOR_DIRECTIVE);
+          _current_token.start_offset = _position;
+          _current_token.end_offset = _position + directive.size() - 1;
+          _current_token.value = directive;
+          _tokens.emplace_back(_current_token);
+          _position += directive.size();
+          goto while_loop_continue;
         }
-        _position++;
-        token.value.push_back(str[_position]);
       }
-      if(str[_position] == ' ')
-      {
-        token.end_offset = _position - 1;
-        token.value.pop_back();
-        _tokens.emplace_back(token);
-        Token whitespace_token(TokenType::WHITESPACE);
-        whitespace_token.start_offset = _position;
-        whitespace_token.end_offset = _position;
-        _position++;
-        whitespace_token.value = " ";
-        _tokens.emplace_back(whitespace_token);
-        continue;
-      }
-      _position++;
-      continue;
     }
 
     /// Seperator
