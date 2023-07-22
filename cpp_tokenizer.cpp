@@ -271,7 +271,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _position++;
           // move forward until we encounter '"'
           std::string header_string_separators =
-            " \n\r!\t;:+-*&%<>=(){}[]\"',|~^";
+            " \n\r!\t;:+*&%<>=(){}[]\"',|~^";
           while(_position < str.size() &&
                 header_string_separators.find(str[_position]) ==
                   std::string::npos)
