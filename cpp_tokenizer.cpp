@@ -270,9 +270,9 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _current_token.value.push_back(str[_position]);
           _position++;
           // move forward until we encounter '"'
-          while(_position < str.size() && str[_position] != '"' &&
-                str[_position] != '\n' && str[_position] != '\t' &&
-                str[_position] != '\r' && str[_position] != ' ')
+          std::string header_string_separators = " \n\r!\t;:+-*&%<>=(){}[]\"',|~^";
+          while(_position < str.size() &&
+                header_string_separators.find(str[_position]) == std::string::npos)
           {
             _current_token.value.push_back(str[_position]);
             _position++;
@@ -286,20 +286,23 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _tokens.emplace_back(_current_token);
           goto while_loop_continue;
         }
-        if(_inside_string)
-        {
-          _inside_string = false;
-          _current_token.value.push_back(character);
-          _current_token.end_offset = _position;
-          _tokens.emplace_back(_current_token);
-          _position++;
-          goto while_loop_continue;
-        }
-        _inside_string = true;
+
+        // it is just a string, move forward until u find a string separator
         _current_token = Token(TokenType::STRING);
-        _current_token.value.push_back(character);
         _current_token.start_offset = _position;
-        _position++;
+        while(_position < str.size() && str[_position] != '\n' &&
+              str[_position] != '\t' && str[_position] != '\r')
+        {
+          _current_token.value.push_back(str[_position]);
+          _position++;
+        }
+        if(str[_position] == '"')
+        {
+          _current_token.value.push_back(str[_position]);
+          _position++;
+        }
+        _current_token.end_offset = _position - 1;
+        _tokens.emplace_back(_current_token);
         goto while_loop_continue;
       }
       else if(character == '<')
