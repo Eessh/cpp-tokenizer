@@ -48,6 +48,9 @@ typedef enum class TokenType
   COMMENT,
   /// @brief Multiline token type.
   MULTILINE_COMMENT,
+  /// @brief Incomplete multiline token type.
+  ///        Incomplete means this token is not closed by "*/"
+  MULTILINE_COMMENT_INCOMPLETE,
   /// @brief Operator token type.
   OPERATOR,
   /// @brief Keyword token type.

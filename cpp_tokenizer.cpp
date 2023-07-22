@@ -404,9 +404,8 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           {
             // end of string
             // although the miltiline comment is unclosed,
-            // we push the token to preserve the state
-
-            /// TODO: implement stateful tokenizing
+            // with token as incomplete type
+            _current_token.type = TokenType::MULTILINE_COMMENT_INCOMPLETE;
             _current_token.end_offset = _position - 1;
             _tokens.push_back(_current_token);
           }
