@@ -293,7 +293,8 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
         _current_token = Token(TokenType::STRING);
         _current_token.start_offset = _position;
         while(_position < str.size() && str[_position] != '\n' &&
-              str[_position] != '\t' && str[_position] != '\r')
+              str[_position] != '\t' && str[_position] != '\r' &&
+              str[_position] != '"')
         {
           _current_token.value.push_back(str[_position]);
           _position++;
