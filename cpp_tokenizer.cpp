@@ -270,9 +270,11 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _current_token.value.push_back(str[_position]);
           _position++;
           // move forward until we encounter '"'
-          std::string header_string_separators = " \n\r!\t;:+-*&%<>=(){}[]\"',|~^";
+          std::string header_string_separators =
+            " \n\r!\t;:+-*&%<>=(){}[]\"',|~^";
           while(_position < str.size() &&
-                header_string_separators.find(str[_position]) == std::string::npos)
+                header_string_separators.find(str[_position]) ==
+                  std::string::npos)
           {
             _current_token.value.push_back(str[_position]);
             _position++;
@@ -333,12 +335,6 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
       }
       else if(character == '/')
       {
-        if(_inside_string)
-        {
-          _current_token.value.push_back(character);
-          _position++;
-          goto while_loop_continue;
-        }
         if(_inside_multiline_comment)
         {
           if(_current_token.value.back() == '*')
@@ -354,34 +350,64 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _position++;
           goto while_loop_continue;
         }
-        if(_inside_comment)
+        if(_position + 1 < str.size() && str[_position + 1] == '/')
         {
-          _current_token.value.push_back(character);
-          _position++;
+          // single line comment
+          _current_token = Token(TokenType::COMMENT);
+          _current_token.start_offset = _position;
+          while(_position < str.size() && str[_position] != '\r' &&
+                str[_position] != '\n')
+          {
+            _current_token.value.push_back(str[_position]);
+            _position++;
+          }
+          _current_token.end_offset = _position - 1;
+          _tokens.push_back(_current_token);
           goto while_loop_continue;
         }
-        if(_position + 1 < str.size())
+        if(_position + 1 < str.size() && str[_position + 1] == '*')
         {
-          if(str[_position + 1] == '/')
+          // multiline comment
+          _current_token = Token(TokenType::MULTILINE_COMMENT);
+          _current_token.start_offset = _position;
+          _current_token.value = "/*";
+          _position += 2;
+          bool inserted_multiline_comment_token = false;
+          while(_position < str.size())
           {
-            // comment
-            _current_token = Token(TokenType::COMMENT);
-            _inside_comment = true;
-            _current_token.value = "//";
-            _current_token.start_offset = _position;
-            _position += 2;
-            goto while_loop_continue;
+            if(str[_position] == '*' && _position + 1 < str.size() &&
+               str[_position + 1] == '/')
+            {
+              // multiline comment ended
+              _current_token.value.append("*/");
+              _position += 2;
+              _current_token.end_offset = _position - 1;
+              _tokens.push_back(_current_token);
+              inserted_multiline_comment_token = true;
+              break;
+            }
+            if(str[_position] == '\r')
+            {
+              // skipping these characters for now
+              // as this is geared towards syntax highlighting
+              // while rendering these characters there will be glitches
+              _position++;
+              continue;
+            }
+            _current_token.value.push_back(str[_position]);
+            _position++;
           }
-          if(str[_position + 1] == '*')
+          if(_position >= str.size() && !inserted_multiline_comment_token)
           {
-            // multiline comment
-            _current_token = Token(TokenType::MULTILINE_COMMENT);
-            _inside_multiline_comment = true;
-            _current_token.value = "/*";
-            _current_token.start_offset = _position;
-            _position += 2;
-            goto while_loop_continue;
+            // end of string
+            // although the miltiline comment is unclosed,
+            // we push the token to preserve the state
+
+            /// TODO: implement stateful tokenizing
+            _current_token.end_offset = _position - 1;
+            _tokens.push_back(_current_token);
           }
+          goto while_loop_continue;
         }
       }
       else if(character == '\n')
@@ -602,17 +628,6 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
     if(_inside_multiline_comment)
     {
       while(_position < str.size() && str[_position] != '*')
-      {
-        _current_token.value.push_back(str[_position]);
-        _position++;
-      }
-      goto while_loop_continue;
-    }
-
-    /// continuing if inside string
-    if(_inside_string)
-    {
-      while(_position < str.size() && str[_position] != '"')
       {
         _current_token.value.push_back(str[_position]);
         _position++;

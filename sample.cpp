@@ -5,6 +5,10 @@
 void func(int a, int b);
 void func_with_number_in_name_1(int a, int b, double c);
 
+/*
+* some multiline comment
+*/
+
 int main()
 {
   int a = 2;
