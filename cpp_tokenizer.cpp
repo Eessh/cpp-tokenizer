@@ -166,6 +166,8 @@ std::string token_type_to_string(const CppTokenizer::TokenType& type)
     return "COMMENT";
   case CppTokenizer::TokenType::MULTILINE_COMMENT:
     return "MULTILINE_COMMENT";
+  case CppTokenizer::TokenType::MULTILINE_COMMENT_INCOMPLETE:
+    return "MULTILINE_COMMENT_INCOMPLETE";
   case CppTokenizer::TokenType::OPERATOR:
     return "OPERATOR";
   case CppTokenizer::TokenType::KEYWORD:
@@ -729,7 +731,7 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
 const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
   const std::string& str,
   const Token& incomplete_token,
-  const bool& append_to_incomplete_token)
+  const bool& append_to_incomplete_token) noexcept
 {
   if(incomplete_token.type == TokenType::MULTILINE_COMMENT_INCOMPLETE)
   {
