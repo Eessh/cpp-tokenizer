@@ -218,7 +218,7 @@ Tokenizer::Tokenizer() noexcept
 
 const std::vector<Token>& Tokenizer::tokenize(
   const std::string& str,
-  std::optional<TabOptions> tab_options = std::nullopt) noexcept
+  std::optional<TabOptions> tab_options) noexcept
 {
   while(_position < str.size())
   {
