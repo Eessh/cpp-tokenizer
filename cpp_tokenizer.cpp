@@ -216,7 +216,9 @@ Tokenizer::Tokenizer() noexcept
   , _position(0)
 {}
 
-const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
+const std::vector<Token>& Tokenizer::tokenize(
+  const std::string& str,
+  std::optional<TabOptions> tab_options = std::nullopt) noexcept
 {
   while(_position < str.size())
   {
@@ -472,6 +474,22 @@ const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
           _position++;
           goto while_loop_continue;
         }
+
+        // checking tab options
+        if(tab_options != std::nullopt &&
+           tab_options.value().replace_tabs_with_spaces)
+        {
+          TabOptions options = tab_options.value();
+          _current_token = Token(TokenType::WHITESPACE);
+          _current_token.start_offset = _position;
+          _current_token.end_offset = _position;
+          _current_token.value =
+            std::string(tab_options.value().tab_width, ' ');
+          _tokens.emplace_back(_current_token);
+          _position++;
+          goto while_loop_continue;
+        }
+
         _current_token = Token(TokenType::TAB);
         _current_token.start_offset = _position;
         _current_token.end_offset = _position;
