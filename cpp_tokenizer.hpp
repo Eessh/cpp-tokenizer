@@ -127,7 +127,6 @@ public:
   [[nodiscard]] const std::vector<Token>& tokenize_from_imcomplete_token(
     const std::string& str,
     const Token& incomplete_token,
-    const bool& append_to_incomplete_token = false,
     std::optional<TabOptions> tab_options = std::nullopt) noexcept;
 
   /// @brief Clears tokens stored in previous tokenization.

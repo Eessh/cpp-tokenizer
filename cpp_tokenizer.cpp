@@ -765,19 +765,11 @@ const std::vector<Token>& Tokenizer::tokenize(
 const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
   const std::string& str,
   const Token& incomplete_token,
-  const bool& append_to_incomplete_token,
   std::optional<TabOptions> tab_options) noexcept
 {
   if(incomplete_token.type == TokenType::MULTILINE_COMMENT_INCOMPLETE)
   {
-    if(append_to_incomplete_token)
-    {
-      _current_token = Token(incomplete_token);
-    }
-    else
-    {
-      _current_token = Token(TokenType::MULTILINE_COMMENT_INCOMPLETE);
-    }
+    _current_token = Token(TokenType::MULTILINE_COMMENT_INCOMPLETE);
     bool inserted_multiline_comment_token = false;
     while(_position < str.size())
     {
@@ -792,6 +784,23 @@ const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
         _tokens.push_back(_current_token);
         inserted_multiline_comment_token = true;
         break;
+      }
+      if(str[_position] == '\t')
+      {
+        if(tab_options == std::nullopt ||
+           !tab_options.value().replace_tabs_with_spaces)
+        {
+          _current_token.value.push_back('\t');
+          _position++;
+          continue;
+        }
+        else
+        {
+          _current_token.value.append(
+            std::string(tab_options.value().tab_width, ' '));
+          _position += tab_options.value().tab_width;
+          continue;
+        }
       }
       if(str[_position] == '\r')
       {
