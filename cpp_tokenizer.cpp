@@ -831,20 +831,20 @@ void log_tokens(const std::vector<Token>& tokens) noexcept
     Token token = tokens[i];
     if(i != tokens.size() - 1)
     {
-      printf("\n  {\n    type: %s,\n    start_offset: %ld,\n    end_offset: "
-             "%ld,\n    value: \"%s\"\n  },",
+      printf("\n  {\n    type: %s,\n    start_offset: %lu,\n    end_offset: "
+             "%lu,\n    value: \"%s\"\n  },",
              token_type_to_string(token.type).c_str(),
-             token.start_offset,
-             token.end_offset,
+             (unsigned long)token.start_offset,
+             (unsigned long)token.end_offset,
              token.value.c_str());
     }
     else
     {
-      printf("\n  {\n    type: %s,\n    start_offset: %ld,\n    end_offset: "
-             "%ld,\n    value: \"%s\"\n  }",
+      printf("\n  {\n    type: %s,\n    start_offset: %lu,\n    end_offset: "
+             "%lu,\n    value: \"%s\"\n  }",
              token_type_to_string(token.type).c_str(),
-             token.start_offset,
-             token.end_offset,
+             (unsigned long)token.start_offset,
+             (unsigned long)token.end_offset,
              token.value.c_str());
     }
   }
