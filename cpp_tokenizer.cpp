@@ -765,7 +765,8 @@ const std::vector<Token>& Tokenizer::tokenize(
 const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
   const std::string& str,
   const Token& incomplete_token,
-  const bool& append_to_incomplete_token) noexcept
+  const bool& append_to_incomplete_token,
+  std::optional<TabOptions> tab_options) noexcept
 {
   if(incomplete_token.type == TokenType::MULTILINE_COMMENT_INCOMPLETE)
   {
@@ -808,7 +809,7 @@ const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
     }
   }
 
-  return this->tokenize(str);
+  return this->tokenize(str, tab_options);
 }
 
 void Tokenizer::clear_tokens() noexcept
