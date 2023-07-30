@@ -100,17 +100,6 @@ public:
   std::string value;
 };
 
-/// @brief Tab Options - Instructions for tokenizer when it encounters '\t'
-///        character.
-struct TabOptions
-{
-  /// @brief Replaces tab - '\t' character with space - ' ' charcter.
-  bool replace_tabs_with_spaces;
-
-  /// @brief This tells how many spaces to insert for each tab character.
-  unsigned short tab_width;
-};
-
 class Tokenizer
 {
 public:
@@ -121,13 +110,11 @@ public:
   /// @param str const reference to the string to tokenize.
   /// @return Const reference to vector of Tokens.
   [[nodiscard]] const std::vector<Token>&
-  tokenize(const std::string& str,
-           std::optional<TabOptions> tab_options = std::nullopt) noexcept;
+  tokenize(const std::string& str) noexcept;
 
-  [[nodiscard]] const std::vector<Token>& tokenize_from_imcomplete_token(
-    const std::string& str,
-    const Token& incomplete_token,
-    std::optional<TabOptions> tab_options = std::nullopt) noexcept;
+  [[nodiscard]] const std::vector<Token>&
+  tokenize_from_imcomplete_token(const std::string& str,
+                                 const Token& incomplete_token) noexcept;
 
   /// @brief Clears tokens stored in previous tokenization.
   void clear_tokens() noexcept;

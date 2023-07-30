@@ -216,9 +216,7 @@ Tokenizer::Tokenizer() noexcept
   , _position(0)
 {}
 
-const std::vector<Token>& Tokenizer::tokenize(
-  const std::string& str,
-  std::optional<TabOptions> tab_options) noexcept
+const std::vector<Token>& Tokenizer::tokenize(const std::string& str) noexcept
 {
   while(_position < str.size())
   {
@@ -471,21 +469,6 @@ const std::vector<Token>& Tokenizer::tokenize(
         if(_inside_comment || _inside_multiline_comment || _inside_string)
         {
           _current_token.value.push_back(character);
-          _position++;
-          goto while_loop_continue;
-        }
-
-        // checking tab options
-        if(tab_options != std::nullopt &&
-           tab_options.value().replace_tabs_with_spaces)
-        {
-          TabOptions options = tab_options.value();
-          _current_token = Token(TokenType::WHITESPACE);
-          _current_token.start_offset = _position;
-          _current_token.end_offset = _position;
-          _current_token.value =
-            std::string(tab_options.value().tab_width, ' ');
-          _tokens.emplace_back(_current_token);
           _position++;
           goto while_loop_continue;
         }
@@ -763,9 +746,7 @@ const std::vector<Token>& Tokenizer::tokenize(
 }
 
 const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
-  const std::string& str,
-  const Token& incomplete_token,
-  std::optional<TabOptions> tab_options) noexcept
+  const std::string& str, const Token& incomplete_token) noexcept
 {
   if(incomplete_token.type == TokenType::MULTILINE_COMMENT_INCOMPLETE)
   {
@@ -785,23 +766,6 @@ const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
         inserted_multiline_comment_token = true;
         break;
       }
-      if(str[_position] == '\t')
-      {
-        if(tab_options == std::nullopt ||
-           !tab_options.value().replace_tabs_with_spaces)
-        {
-          _current_token.value.push_back('\t');
-          _position++;
-          continue;
-        }
-        else
-        {
-          _current_token.value.append(
-            std::string(tab_options.value().tab_width, ' '));
-          _position += tab_options.value().tab_width;
-          continue;
-        }
-      }
       if(str[_position] == '\r')
       {
         _position++;
@@ -818,7 +782,7 @@ const std::vector<Token>& Tokenizer::tokenize_from_imcomplete_token(
     }
   }
 
-  return this->tokenize(str, tab_options);
+  return this->tokenize(str);
 }
 
 void Tokenizer::clear_tokens() noexcept
